@@ -40,6 +40,30 @@ def df_with_original_and_paraphrased_text(original_text_list, paraphrased_text_l
     })
     return df
 
+def make_input_mistral(phrase: str) -> str:
+    system = f"""Du er en sprogmodel som forstår og taler kompetent dansk.
+    Du svarer kun på dansk.
+    Din opgave er at omformulere tekst ved at finde synonymer med samme betydning.
+    Her er nogle eksempler på omformuleringer:
+    {examples.original[0]} -> {examples.paraphrased[0]},
+    {examples.original[1]} -> {examples.paraphrased[1]}
+    Her er nogle regler du skal overholde:
+    Du må ikke gentage dig selv.
+    Du må ikke bruge samme sætning som i originalen.
+    Du skal bruge samme kontekst som i originalen.
+    """
+
+    prompt = f"""
+    <|im_start|>system
+    {system}<|im_end|>
+    <|im_start|>user
+    {phrase}<|im_end|>
+    <|im_start|>assistant
+    """
+
+    return prompt
+
+
 # Creates a similarty metric between original and paraphrased sentences in the df ^ created above
 def semantic_similarity(df):
     model = SentenceTransformer("sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
