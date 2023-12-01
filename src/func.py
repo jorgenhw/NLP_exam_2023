@@ -1,10 +1,15 @@
 import openai
 import os
-from dotenv import load_dotenv
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
+from dotenv import load_dotenv # load .env file
+from sentence_transformers import SentenceTransformer # semantic similarity
+from sklearn.metrics.pairwise import cosine_similarity # cosine similarity
 import pandas as pd
-from tqdm import tqdm
+from tqdm import tqdm # loading bar
+
+from ctransformers import AutoModelForCausalLM # using mistral model
+from pathlib import Path # path stuff
+
+
 
 # Set the OpenAI API key
 def set_api_key():
