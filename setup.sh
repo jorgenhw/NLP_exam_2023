@@ -12,7 +12,7 @@ python3 -m pip install --upgrade pip
 pip install -r requirements.txt
 
 # run the code
-#python3 main.py
+python3 main_mistral.py
 
 # Extra: Type ```python3 main.py --help``` to see the help message for the adjustable parameters
 

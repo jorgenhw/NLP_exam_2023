@@ -16,6 +16,10 @@ def set_api_key():
     load_dotenv()
     openai.api_key = os.getenv("OPENAI_API_KEY")
 
+###################################
+#            CHAT GPT             #
+###################################
+
 # Paraphrase a list of strings and output a list of paraphrased strings (using gpt-3)
 def paraphrase_text_list(text_list):
     paraphrased_list = []
@@ -32,25 +36,18 @@ def paraphrase_text_list(text_list):
         paraphrased_list.append(paraphrased_text)
     return paraphrased_list
 
-# Creates a dataset with original text and paraphrased text
-def df_with_original_and_paraphrased_text(original_text_list, paraphrased_text_list):
-    df = pd.DataFrame({
-        'original_text': original_text_list, 
-        'paraphrased_text': paraphrased_text_list
-    })
-    return df
+###################################
+#            MISTRAL              #
+###################################
+def make_input_mistral(phrase: str) -> str: # examples should be a dataset with column 0 being the original text and column 1 being the paraphrased text
+    system = f"""Your task is to proficiently understand and communicate in Danish. You are required to rephrase text in Danish while adhering to the following rules:
 
-def make_input_mistral(phrase: str) -> str:
-    system = f"""Du er en sprogmodel som forstår og taler kompetent dansk.
-    Du svarer kun på dansk.
-    Din opgave er at omformulere tekst ved at finde synonymer med samme betydning.
-    Her er nogle eksempler på omformuleringer:
-    {examples.original[0]} -> {examples.paraphrased[0]},
-    {examples.original[1]} -> {examples.paraphrased[1]}
-    Her er nogle regler du skal overholde:
-    Du må ikke gentage dig selv.
-    Du må ikke bruge samme sætning som i originalen.
-    Du skal bruge samme kontekst som i originalen.
+1. Avoid repeating yourself.
+2. Refrain from using the same sentence as in the original text.
+3. Maintain a similar text length to the original.
+4. Ensure the context remains consistent with the original text.
+
+Please provide your rephrased response in Danish, observing the given rules and maintaining the context of the original text.
     """
 
     prompt = f"""
@@ -63,13 +60,48 @@ def make_input_mistral(phrase: str) -> str:
 
     return prompt
 
+def load_mistral(model_path):
+    model = AutoModelForCausalLM.from_pretrained(
+        str(model_path), 
+        model_type="mistral",
+        gpu_layers=50,
+        temperature=0.8, # default is 0.8
+        top_p = 0.95,
+        top_k = 40,  # default is 0.95
+        max_new_tokens = 1000,
+        context_length = 6000)
+    
+    return model
+
+def generate_dataframe(original, model, output_name: str): # original = list of strings, model = output from the load_mistral() function
+    data = []
+    for string in tqdm(original):
+        new = model(make_input_mistral(string))
+        data.append([string, new])
+    df = pd.DataFrame(data, columns=['Original', 'New'])
+    # save df as csv
+    df.to_csv(Path.cwd() / 'data' / output_name, index=False)
+    return df
+
+
+
+# Creates a dataset with original text and paraphrased text
+def df_with_original_and_paraphrased_text(original_text_list, paraphrased_text_list):
+    df = pd.DataFrame({
+        'original_text': original_text_list, 
+        'paraphrased_text': paraphrased_text_list
+    })
+    # save df as csv
+    df.to_csv(Path.cwd() / 'data' / 'paraphrasings.csv', index=False)
+    return df
+
 
 # Creates a similarty metric between original and paraphrased sentences in the df ^ created above
 def semantic_similarity(df):
     model = SentenceTransformer("sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
     similarities = []
-    for index, row in df.iterrows():
-        embeddings = model.encode([row['original_text'], row['paraphrased_text']])
+    for index, row in tqdm(df.iterrows()):
+        embeddings = model.encode([row['Original'], row['New']])
         similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0][0]
         similarities.append(similarity)
     df['semantic_similarity'] = similarities
