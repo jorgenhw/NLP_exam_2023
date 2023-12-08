@@ -7,7 +7,13 @@ from ctransformers import AutoModelForCausalLM # using mistral model
 from pathlib import Path # path stuff
 
 
-
+# load data
+def load_data(path: str) -> pd.DataFrame:
+    """
+    path: path to the data, must be a csv file
+    """
+    df = pd.read_csv(path)
+    return df
 
 # Loading LLM model
 def load_llm(model_path, model_type="mistral"):

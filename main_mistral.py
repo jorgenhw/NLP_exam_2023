@@ -4,7 +4,7 @@
 #3# huggingface-cli download TheBloke/OpenHermes-2.5-Mistral-7B-GGUF openhermes-2.5-mistral-7b.Q4_K_M.gguf --local-dir . --local-dir-use-symlinks False
 import pandas as pd
 # playing with mistral
-from src.func_mistral import load_llm, generate_dataframe, semantic_similarity, generate_paraphrases
+from src.func_mistral import load_llm, generate_dataframe, semantic_similarity, generate_paraphrases, load_data
 from pathlib import Path
 from src.classes import bcolors
 
@@ -23,10 +23,14 @@ def main():
     print("")
     input("If you have done the above, press Enter to continue...")
     print("--------------------------------------------------")
-    
+    print("Put your csv file in the data folder.")
+    input("If you have done the so, press Enter to continue...")
+    print("Insert the name of the csv file you want to paraphrase (without the .csv extension): ")
+    filename = input()
+
     # load CSV
     print("Loading data...")
-    train_data = pd.read_csv(Path.cwd() / 'data' / 'train_data.csv')
+    train_data = load_data(Path.cwd() / 'data' / f'{filename}.csv')
 
     # load model
     model = load_llm(Path.cwd() / 'model' / 'openhermes-2.5-mistral-7b.Q4_K_M.gguf')
