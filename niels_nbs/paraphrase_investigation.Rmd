@@ -1,0 +1,161 @@
+---
+title: "Untitled"
+author: "Niels Aalund Krogsgaard"
+date: "2023-12-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+pacman::p_load(tidyverse)
+```
+
+```{r}
+df <- read_csv("/Users/nielsaalundkrogsgaard/Downloads/paraphrasings_w_semantics.csv")
+
+df_train <- read_csv("/Users/nielsaalundkrogsgaard/Downloads/data_train.csv")
+```
+```{r}
+# combine data
+df <- df %>% 
+  mutate(label = df_train$label) %>% 
+  mutate(org_text = df_train$text)
+
+# remove <|im_end|> and everything after from text
+df <- df %>% 
+  #mutate(new_new = str_remove_all(New, "\n.*")) %>% 
+  mutate(New = str_remove_all(New, "(?s)<.im_end.>.*"))
+```
+
+```{r}
+# distribution of semantic similarity
+ggplot(data = df, aes(x = semantic_similarity)) + 
+        geom_histogram(binwidth = 0.01, color = "black", fill = "white")
+
+df$new_length <- nchar(df$New)
+df$org_length <- nchar(df$Original)
+
+# distribution of length of new text
+df %>% 
+  ggplot(aes(x = new_length)) +
+  geom_histogram(binwidth = 10, color = "black", fill = "white")
+
+# distribution of length of old text
+df %>% 
+  ggplot(aes(x = org_length)) +
+  geom_histogram(binwidth = 10, color = "black", fill = "white")
+
+# distribution of the difference in length
+df %>% 
+  ggplot(aes(x = org_length - new_length)) +
+  geom_histogram(binwidth = 10, color = "black", fill = "white")
+
+# distribution of filtered text
+df %>% 
+  filter(new_length < 500) %>% 
+  filter(semantic_similarity > 0.7) %>% 
+  filter(semantic_similarity < 0.95) %>% 
+  ggplot(aes(x = org_length - new_length)) +
+  geom_histogram(binwidth = 10, color = "black", fill = "white")
+```
+
+```{r}
+# original number of rows
+df %>% 
+  summarise(n())
+
+# remove rows above certain length
+df %>% 
+  filter(new_length < 500) %>% 
+  summarise(n())
+
+# remove rows outside range of semantic similarity
+df %>% 
+  filter(semantic_similarity > 0.7) %>% 
+  filter(semantic_similarity < 0.95) %>% 
+  summarise(n())
+
+# remove rows aboce certain length AND outside range of semantic similarity
+df %>% 
+  filter(new_length < 500) %>% 
+  filter(semantic_similarity > 0.7) %>% 
+  filter(semantic_similarity < 0.95) %>% 
+  summarise(n())
+```
+
+# Sanity check of sentiment in produced sentences
+
+```{r}
+# if(!require("devtools")) install.packages("devtools")
+# 
+# devtools::install_github("Guscode/Sentida")
+# 
+# library(Sentida)
+```
+
+```{r}
+# crude sanity check on sentiment
+
+df$sentida_score_org <- rep(NA, nrow(df))
+
+for (i in 1:nrow(df)){
+  df$sentida_score_org[i] <- sentida(df$Original[i], output = "mean")
+}
+
+df$sentida_score_new <- rep(NA, nrow(df))
+
+for (i in 1:nrow(df)){
+  df$sentida_score_new[i] <- sentida(df$New[i], output = "mean")
+}
+```
+
+```{r}
+# distribution of difference in sentiment
+
+df %>% 
+  ggplot(aes(x = sentida_score_org - sentida_score_new, fill = label)) +
+  geom_histogram(binwidth = 0.1, color = "black", fill = "white")
+
+df %>% 
+  summarise(mean_diff_sent = mean(sentida_score_org - sentida_score_new), sd_diff_sent = sd(sentida_score_org - sentida_score_new))
+
+# distribution of sentiment in original text
+df %>% 
+  ggplot(aes(x = sentida_score_org, fill = label)) +
+  geom_histogram(binwidth = 0.1, color = "black", fill = "white")
+
+
+# distribution of sentiment in new text
+df %>% 
+  ggplot(aes(x = sentida_score_new, fill = label)) +
+  geom_histogram(binwidth = 0.1, color = "black", fill = "white")
+```
+
+```{r}
+# distribution of difference in sentiment
+
+df %>% 
+  ggplot(aes(x = sentida_score_org - sentida_score_new, fill = label)) +
+  geom_histogram(binwidth = 0.1, color = "black")
+
+df %>% 
+  summarise(mean_diff_sent = mean(sentida_score_org - sentida_score_new), sd_diff_sent = sd(sentida_score_org - sentida_score_new))
+
+# distribution of sentiment in original text
+df %>% 
+  ggplot(aes(x = sentida_score_org, fill = label)) +
+  geom_histogram(binwidth = 0.1, color = "black")
+
+
+# distribution of sentiment in new text
+df %>% 
+  ggplot(aes(x = sentida_score_new, fill = label)) +
+  geom_histogram(binwidth = 0.1, color = "black")
+```
+
+
+
+
