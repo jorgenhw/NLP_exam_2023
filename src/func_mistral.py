@@ -84,7 +84,7 @@ def generate_dataframe(df, original_column_name: list, paraphrases: list): # ori
     data = list(zip(original, paraphrases))
     df = pd.DataFrame(data, columns=['Original', 'New']) # create dataframe with original and paraphrased text
     # save df as csv
-    df.to_csv(Path.cwd() / 'data' / 'paraphrasings.csv', index=False)
+    df.to_csv(Path.cwd() / 'data' / 'paraphrasingsNEW.csv', index=False)
     return df
 
 # Creates a similarty metric between original and paraphrased sentences in the df ^ created above
@@ -100,7 +100,7 @@ def semantic_similarity(df, model = "sentence-transformers/paraphrase-multilingu
     model = SentenceTransformer(model)
     similarities = []
     for row in tqdm(df.iterrows()):
-        embeddings = model.encode([row['Original'], row['New']])
+        embeddings = model.encode([row[0], row[1]])
         similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0][0]
         similarities.append(similarity)
     df['semantic_similarity'] = similarities

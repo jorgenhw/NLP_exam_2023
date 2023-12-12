@@ -1,4 +1,4 @@
-import src.func as func
+import src.func_gpt as func
 
 # Import openai key
 func.set_api_key()

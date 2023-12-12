@@ -3,3 +3,5 @@ venv_NLP_exam
 /model
 .DS_Store
 */.DS_Store
+logs
+test_trainer
