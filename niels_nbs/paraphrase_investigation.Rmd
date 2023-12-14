@@ -93,7 +93,7 @@ df %>%
 # 
 # devtools::install_github("Guscode/Sentida")
 # 
-# library(Sentida)
+library(Sentida)
 ```
 
 ```{r}
@@ -156,6 +156,15 @@ df %>%
   geom_histogram(binwidth = 0.1, color = "black")
 ```
 
+```{r}
+df <- df %>% 
+  select(Original, New, label, semantic_similarity, org_length, new_length, sentida_score_org, sentida_score_new)
+```
+
+
+```{r}
+write_csv(df, "/Users/nielsaalundkrogsgaard/documents_local/NLP_exam/NLP_exam_2023/niels_nbs/niels_data/twitter_data_paraphrasings_w_other_stuff.csv")
+```
 
 
 
