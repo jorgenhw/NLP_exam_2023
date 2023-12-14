@@ -1,0 +1,8 @@
+col2,col3,is_original,Text
+1,1.1,1,Jeg en går mig bygge vil
+2,2.2,1,Jeg gik mig over sø og land
+3,3.3,1,der mødte jeg en gammel mand
+1,1.1,0," selv en skole her og derefter åbne dørerne for andre, men hvem vil takke for en ærgrelse.
+    <|im_end|>"
+2,2.2,0, Jag krydsede hav og bjerg<|im_end|>
+3,3.3,0, Jeg mødte en ældre herre. <|im_end|>
