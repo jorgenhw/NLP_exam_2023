@@ -1,16 +1,16 @@
 from datasets import Dataset
 import pandas as pd
+import os
 
 
 # Load and preprocess the dataset
-def load_and_prepare_dataset(file_path):
-    # Load the dataset
-    dataset = pd.read_csv(file_path)
+def load_and_prepare_dataset(file_name):
 
+    # Load the dataset
+    dataset = pd.read_csv(os.path.join('data', f'{file_name}.csv'))
 
     # make dataset only 500 long 
     dataset = dataset[:500] 
-
 
     # Remove all rows where language is not 'da'
     dataset = dataset[dataset['language'] == 'da']

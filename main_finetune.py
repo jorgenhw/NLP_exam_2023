@@ -4,8 +4,15 @@ import os
 path = os.path.join("data", "tweets_data_temp.csv")
 
 def main():
+    print("--------------------------------------------------")
+    print("Starting finetuning script...")
+    print("")
+    print("1. Put your correctly formated .csv file (see README) in the data folder")
+    input("If you have done so, press enter to continue...")
+    input("Type the filename of the dataset without the extension (.csv) of the dataset you want to use: ")    
+    file_name = input()
     print("Loading and preparing dataset...")
-    dataset = load_and_prepare_dataset(path)
+    dataset = load_and_prepare_dataset(file_name)
 
     print("Splitting dataset...")
     dataset_splitted_dict = split_dataset(dataset)
