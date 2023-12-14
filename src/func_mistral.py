@@ -19,7 +19,7 @@ def load_data(path: str) -> pd.DataFrame:
     return df
 
 # Loading LLM model
-def load_llm(model_path: str, temperature: float = 0.8, max_new_tokens: int = 1000, context_length: int = 6000):
+def load_llm(model_path: str, temperature: float = 0.8, top_p: float = 0.95, top_k: int = 40, max_new_tokens: int = 1000, context_length: int = 6000):
     """
     model_path: path to the model
     """
@@ -28,8 +28,8 @@ def load_llm(model_path: str, temperature: float = 0.8, max_new_tokens: int = 10
         model_type="mistral",
         gpu_layers=50,
         temperature=temperature, # default is 0.8
-        top_p = 0.95,
-        top_k = 40,  # default is 0.95
+        top_p = top_p,
+        top_k = top_k,  # default is 40
         max_new_tokens = max_new_tokens,
         context_length = context_length)
     

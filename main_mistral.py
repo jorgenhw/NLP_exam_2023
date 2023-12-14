@@ -50,6 +50,8 @@ def main(args):
     # load model
     model = load_llm(Path.cwd() / 'model' / 'openhermes-2.5-mistral-7b.Q4_K_M.gguf',
                      temperature=args.temperature,
+                     top_k=args.top_k,
+                     top_p=args.top_p,
                      max_new_tokens=args.max_new_tokens,
                      context_length=args.context_length)
     
@@ -86,7 +88,8 @@ def main(args):
     print(f'{bcolors.BOLD}Calculating semantic similarity...{bcolors.ENDC}')
 
     # generate semantic similarity scores and append them as a column to the dataframe
-    semantic_similarity(df_internal)
+    semantic_similarity(df_internal,
+                        model=args.model)
     
     
     print("Adding semantic similarity scores to dataframe...")
@@ -113,15 +116,18 @@ def main(args):
     print("--------------------------------------------------")
     print("Script successfully run. Check the 'data' folder for the paraphrased data.")
     
-if __name__ == "__main__":
-    main()
-
-
 # Parse arguments
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Script for generating paraphrases for annotated datasets with Mistral')
-    # Optional arguments for logstic regression
-    parser.add_argument('--temperature', type=float, default=0.9, help='specify the temperature for Mistral, default is 0.9')
+    # Optional arguments for defining the parameters of the mistral model
+    parser.add_argument('--temperature', type=float, default=0.8, help='specify the temperature for Mistral, default is 0.9')
+    parser.add_argument('--top_p', type=float, default=0.95, help='specify the top_p for Mistral, default is 0.95')
+    parser.add_argument('--top_k', type=int, default=40, help='specify the top_k for Mistral, default is 40')
+    parser.add_argument('--max_new_tokens', type=int, default=1000, help='specify the max number of new tokens for Mistral, default is 1000')
+    parser.add_argument('--context_length', type=int, default=6000, help='specify the context length for Mistral, default is 6000')
+
+    # Change the semantic similarity model
+    parser.add_argument('--model', type=str, default='sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2', help='specify the semantic similarity model, default is sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
 
     args = parser.parse_args()
     main(args)

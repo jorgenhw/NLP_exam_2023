@@ -22,9 +22,10 @@ To use or reproduce the results you need to adopt the following steps.
 **NOTE:** There may be slight variations depending on the terminal and operating system you use. The following example is designed to work using the Visual Studio Code version 1.76.0 (Universal) on a machine running MacOS Ventura 13.4 on a M1 Max chip. The terminal code should therefore work using a unix-based bash. The avoid potential package conflicts, the ```setup.sh``` bash files contains the steps necesarry to create a virtual environment for the project.
 
 1. Clone repository
-2. Add your data to the ```data``` folder
-3. Run setup.sh
-4. [Optional] Change arguments
+2. Download Mistral LLM
+3. Add your data to the ```data``` folder
+4. Run setup.sh
+5. [Optional] Change arguments
 
 > **Step 1** Clone repository
 
@@ -35,46 +36,58 @@ git clone https://github.com/jorgenhw/NLP_exam_2023.git
 cd NLP_exam_2023
 ```
 
-> **Step 1.2** Download Mistral locally
+> **Step 2** Download Mistral locally
 
 This is done by running the following line in your terminal
 
 ```
 huggingface-cli download TheBloke/OpenHermes-2.5-Mistral-7B-GGUF openhermes-2.5-mistral-7b.Q4_K_M.gguf --path ./model --path-use-symlinks False
 ```
-This locates the model in the `model` folder.
+This saves the model in the `model` folder in the repository.
 
-> **Step 2** Add your data to the ```data``` folder
-
-This script only takes the file format ```.csv```.
+> **Step 3** Add your data to the ```data``` folder
 
 *Correct format of data:*
+This script only takes the file format ```.csv```.
 
-1. The data can be both long and short format as long as **the first column is the strings to be paraphrased**.
-2. Place the data in the ```data``` folder.
+Place the data in the ```data``` folder.
 
-> **Step 3** Run ```setup.sh```
+> **Step 4** Run ```setup.sh```
 
-In your terminal write
+To run the program, we have included a bash script that automatically
+
+1. Creates a virtual environment for the project
+2. Activates the virtual environment
+3. Installs the correct versions of the packages required
+4. Runs the script
+5. Deactivates the virtual environment
+
+Run the code below in your bash terminal:
 
 ```
 bash setup.sh
 ```
 
-> **Step 4** [Optional]: Change arguments
+> **Step 5** [Optional]: Change parameters
 
 The following arguments can be changed using ```arparse```. Below is a table descriping the different arguments.
 
+To print the different arguments in the terminal, write:
 ```
-bash setup.sh --argument_x_and_y example
+python3 main.py --help
 ```
 
-|    | Argument | Default | Description |
-|:------:|:----------:|:------------------:|:------------------:|
-|  1  |    39 M    |     `tiny.en`      |       `tiny`       |
-|  2  |    74 M    |     `base.en`      |       `base`       |
-| 3  |   244 M    |     `small.en`     |      `small`       |
-| 4 |   769 M    |    `medium.en`     |      `medium`      |
-| 5  |   1550 M   |        N/A         |      `large`       |
+| Argument                | Data Type | Default Value                                                         | Description                                                                                         |
+|-------------------------|-----------|-----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| `-h, --help`            | N/A       | N/A                                                                   | Show this help message and exit                                                                     |
+| `--temperature`         | float     | 0.8                                                                   | Specify the temperature for Mistral                                                                 |
+| `--top_p`               | float     | 0.95                                                                  | Specify the top_p for Mistral                                                                       |
+| `--top_k`               | int       | 40                                                                    | Specify the top_k for Mistral                                                                       |
+| `--max_new_tokens`      | int       | 1000                                                                  | Specify the max number of new tokens for Mistral                                                    |
+| `--context_length`      | int       | 6000                                                                  | Specify the context length for Mistral                                                              |
 
+To specify an argument write
 
+```
+python3 main.py --temperature 0.6
+```
