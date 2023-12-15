@@ -38,12 +38,21 @@ cd NLP_exam_2023
 
 > **Step 2** Download Mistral locally
 
-This is done by running the following line in your terminal
+This is done by running the following two line in your terminal, one by one
+
+NB: Make sure you're in the root directory (NLP_exam_2023) and that you are inside the virtual environment.
 
 ```
-huggingface-cli download TheBloke/OpenHermes-2.5-Mistral-7B-GGUF openhermes-2.5-mistral-7b.Q4_K_M.gguf --path ./model --path-use-symlinks False
+huggingface-cli download TheBloke/OpenHermes-2.5-Mistral-7B-GGUF openhermes-2.5-mistral-7b.Q4_K_M.gguf --local-dir model --local-dir-use-symlinks False
 ```
-This saves the model in the `model` folder in the repository.
+
+This downloads and saves Mistral7B in the 'model' folder.
+
+NOTE: If you're on a machine with GPU (e.g. M1 Macbooks), install the GPU version of Mistral (.GPTQ) instead with the following line:
+
+```
+huggingface-cli download TheBloke/Mistral-7B-Instruct-v0.2-DARE-GPTQ --local-dir model --local-dir-use-symlinks False
+```
 
 > **Step 3** Add your data to the ```data``` folder
 

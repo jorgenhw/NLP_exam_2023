@@ -1,6 +1,6 @@
 .env
 venv_NLP_exam
-model/openhermes-2.5-mistral-7b.Q4_K_M.gguf
+model
 .DS_Store
 */.DS_Store
 logs

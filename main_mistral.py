@@ -1,7 +1,3 @@
-# before running this, run the following in the terminal: 
-#1# run setup.sh
-#2# CT_METAL=1 pip install ctransformers --no-binary ctransformers
-#3# huggingface-cli download TheBloke/OpenHermes-2.5-Mistral-7B-GGUF openhermes-2.5-mistral-7b.Q4_K_M.gguf --local-dir . --local-dir-use-symlinks False
 import pandas as pd
 # playing with mistral
 from src.func_mistral import load_llm, semantic_similarity, generate_paraphrases, load_data, generate_internal_dataframe, paraphrase_clean_func, generate_final_dataframe
@@ -14,12 +10,21 @@ import argparse
 
 def main(args):
     print(f'{bcolors.HEADER}Running main_mistral.py{bcolors.ENDC}')
- 
+    print("")
     print("--------------------------------------------------")
 
-    print(f"{bcolors.BOLD}Before continuing, make sure you have run the following in the terminal (if not, end this and do so, making sure you're in the right working directory (see README step 2)): {bcolors.ENDC}")
+    print(f"{bcolors.BOLD}Before continuing, make sure you have run the following in the terminal (if not, end this and do so, making sure you're in the right working directory and in the virtual environment (see README step 2)): {bcolors.ENDC}")
     print("")
-    print("huggingface-cli download TheBloke/OpenHermes-2.5-Mistral-7B-GGUF openhermes-2.5-mistral-7b.Q4_K_M.gguf --path ./model --path-use-symlinks False")
+    print("huggingface-cli download TheBloke/OpenHermes-2.5-Mistral-7B-GGUF openhermes-2.5-mistral-7b.Q4_K_M.gguf --local-dir model --local-dir-use-symlinks False")
+    print("")
+    print("If you're on a machine with GPU, run the following instead:")
+    print("")
+    print("mkdir Mistral-7B-Instruct-v0.2-DARE-GPTQ")
+    print("huggingface-cli download TheBloke/Mistral-7B-Instruct-v0.2-DARE-GPTQ --local-dir Mistral-7B-Instruct-v0.2-DARE-GPTQ --local-dir-use-symlinks False")
+
+
+
+
     print("")
     input(f"{bcolors.OKCYAN}If you have done the above, press Enter to continue...{bcolors.ENDC}")
     print("--------------------------------------------------")
@@ -48,12 +53,12 @@ def main(args):
     
     ##########################################
     # load model
-    model = load_llm(Path.cwd() / 'model' / 'openhermes-2.5-mistral-7b.Q4_K_M.gguf',
-                     temperature=args.temperature,
+    model = load_llm(temperature=args.temperature,
                      top_k=args.top_k,
                      top_p=args.top_p,
                      max_new_tokens=args.max_new_tokens,
-                     context_length=args.context_length)
+                     context_length=args.context_length,
+                     repetition_penalty=args.repetition_penalty)
     ##########################################
     
     print(f'{bcolors.OKGREEN}Model loaded{bcolors.ENDC}')
@@ -130,6 +135,7 @@ if __name__ == "__main__":
     parser.add_argument('--top_k', type=int, default=40, help='specify the top_k for Mistral, default is 40')
     parser.add_argument('--max_new_tokens', type=int, default=1000, help='specify the max number of new tokens for Mistral, default is 1000')
     parser.add_argument('--context_length', type=int, default=6000, help='specify the context length for Mistral, default is 6000')
+    parser.add_argument('--repetition_penalty', type=float, default=1.1, help='specify the repetition penalty for Mistral, default is 1.1')
 
     # Change the semantic similarity model
     parser.add_argument('--model', type=str, default='sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2', help='specify the semantic similarity model, default is sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')

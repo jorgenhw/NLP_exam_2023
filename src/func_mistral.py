@@ -4,9 +4,11 @@ import pandas as pd
 from tqdm import tqdm # loading bar
 import regex as re # regex
 from danlp.models import load_bert_tone_model
+import torch
 
 from ctransformers import AutoModelForCausalLM # using mistral model
 from pathlib import Path # path stuff
+import os
 
 # For arguments
 from argparse import ArgumentParser
@@ -20,21 +22,45 @@ def load_data(path: str) -> pd.DataFrame:
     df = pd.read_csv(path)
     return df
 
-# Loading LLM model
-def load_llm(model_path: str, temperature: float = 0.8, top_p: float = 0.95, top_k: int = 40, max_new_tokens: int = 1000, context_length: int = 6000):
 
-    """
-    model_path: path to the model
-    """
+# Loading LLM model
+def load_llm(temperature: float = 0.8, 
+             top_p: float = 0.95, 
+             top_k: int = 40, 
+             max_new_tokens: int = 1000, 
+             context_length: int = 6000,
+             repetition_penalty: float = 1.1):
+
+    model_dir = Path.cwd() / 'model' / 'openhermes-2.5-mistral-7b.Q4_K_M.gguf'
+    #model_name_gguf = 'openhermes-2.5-mistral-7b.Q4_K_M.gguf'
+    #model_name_gptq = 'Mistral-7B-Instruct-v0.2-DARE-GPTQ'
+
+    # Check if the gguf model exists
+    #if os.path.isfile(model_dir / model_name_gguf):
+    #    model_name = model_name_gguf
+    #    # model path
+    #    model_path = model_dir / model_name
+    # If not, check if the gptq model exists
+    #elif os.path.isfile(model_dir / model_name_gptq):
+    #    model_name = model_name_gptq
+        # model path
+    #    model_path = model_dir / model_name
+    #    print(model_path)
+    #else:
+    #    raise Exception("No valid model found in the model directory")
+    
     model = AutoModelForCausalLM.from_pretrained(
-        str(model_path), 
+        str(model_dir),
         model_type="mistral",
         gpu_layers=50,
         temperature=temperature, # default is 0.8
         top_p = top_p,
         top_k = top_k,  # default is 40
         max_new_tokens = max_new_tokens,
-        context_length = context_length)
+        context_length = context_length,
+        repetition_penalty=repetition_penalty)
+    
+    #print(f"Using loaded model: {model_name}")
     
     return model
 
@@ -184,13 +210,14 @@ def generate_final_dataframe(original_df: pd.DataFrame, new_df: pd.DataFrame, or
     
     # Step 1 & 2: Modify original dataframe
     modified_original_df = original_df.copy()
-    modified_original_df['label'] = 1
+    modified_original_df['org_or_new'] = 1
     modified_original_df.rename(columns={original_col_name: 'New'}, inplace=True)
     
     # Step 3: Combine the dataframes with new labels
     # Assigning label=0 for new_df here to avoid modifying the original data
-    combined_df = pd.concat([new_df.assign(label=0), modified_original_df], ignore_index=True)
-    print("printing combined_df")
-    print(combined_df)
+    combined_df = pd.concat([new_df.assign(org_or_new=0), modified_original_df], ignore_index=True)
+
+    # save combined_df as csv in data folder
+    combined_df.to_csv(Path.cwd() / 'data' / 'combined_df_15dec.csv', index=False)
+
     return combined_df
-        
