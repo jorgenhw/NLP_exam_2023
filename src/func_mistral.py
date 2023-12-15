@@ -9,9 +9,6 @@ from danlp.models import load_bert_tone_model
 from ctransformers import AutoModelForCausalLM # using mistral model
 from pathlib import Path # path stuff
 
-# For arguments
-from argparse import ArgumentParser
-
 
 # load data
 def load_data(path: str) -> pd.DataFrame:
