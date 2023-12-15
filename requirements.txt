@@ -11,5 +11,6 @@ sentence-transformers == 2.2.2
 huggingface-hub == 0.19.4
 ctransformers --no-binary ctransformers --config-settings="CT_METAL=1"
 argparse == 1.4.0
-
+danlp == 0.1.2
+gensim == 4.3.2
 #PyDataLoader == 0.1.3

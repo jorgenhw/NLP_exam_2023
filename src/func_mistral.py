@@ -2,6 +2,8 @@ from sentence_transformers import SentenceTransformer # semantic similarity
 from sklearn.metrics.pairwise import cosine_similarity # cosine similarity
 import pandas as pd
 from tqdm import tqdm # loading bar
+import regex as re # regex
+from danlp.models import load_bert_tone_model
 
 from ctransformers import AutoModelForCausalLM # using mistral model
 from pathlib import Path # path stuff
@@ -20,6 +22,7 @@ def load_data(path: str) -> pd.DataFrame:
 
 # Loading LLM model
 def load_llm(model_path: str, temperature: float = 0.8, top_p: float = 0.95, top_k: int = 40, max_new_tokens: int = 1000, context_length: int = 6000):
+
     """
     model_path: path to the model
     """
@@ -75,22 +78,27 @@ def generate_paraphrases(df, column_name, model):
         paraphrases.append(paraphrase)
     return paraphrases
 
-##########################################################
-#            DATAFRAME FOR INTERNAL FILTERING OF DF      #
-##########################################################
 
-# generate a dataframe with the original and paraphrased text
-def generate_internal_dataframe(df, original_column_name: list, paraphrases: list): # original and paraphrases = list of strings
+def generate_internal_dataframe(df, original_column_name: str, paraphrases: list):
+    # original_column_name: the name of the column in df containing the original text
+    # paraphrases: the paraphrased texts
     
-     """
-     original: the original text to paraphrase
-     paraphrases: the paraphrased texts
-     """
-     original = df[original_column_name].tolist()
-     data = list(zip(original, paraphrases))
-     df = pd.DataFrame(data, columns=['Original', 'New']) # create dataframe with original and paraphrased text
-     
-     return df
+    # Create a DataFrame for original texts and rename the original_column to "Original"
+    original_df = df[[original_column_name]].rename(columns={original_column_name: 'Original'})
+    
+    # Create a DataFrame for paraphrases with column name "New"
+    paraphrase_df = pd.DataFrame({'New': paraphrases})
+    
+    # Combine the original and paraphrase DataFrames by index, where index alignment is assumed
+    combined_df = pd.concat([original_df, paraphrase_df], axis=1)
+    
+    # Optionally, re-attach other columns from the original df that you want to keep besides the original text
+    combined_df = pd.concat([df.drop(columns=[original_column_name]), combined_df], axis=1)
+
+    # save combinedf_df as csv in data folder
+    combined_df.to_csv(Path.cwd() / 'data' / 'combined_df.csv', index=False)
+
+    return combined_df
 
 
 # generate semantic similarity scores and append them as a column to the dataframe
@@ -107,12 +115,17 @@ def semantic_similarity(df, model = "sentence-transformers/paraphrase-multilingu
         similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0][0]
         similarities.append(similarity)
     df['semantic_similarity'] = similarities
-    # save df as csv
-    df.to_csv(Path.cwd() / 'data' / 'paraphrasings_w_semantics.csv', index=False)
-    return None
+    return df
 
 
-def paraphrase_clean_func(df: pd.DataFrame, org_col_name: str, para_col_name: str, min_length: int, max_length: int, min_semantic_similarity: float = 0.5, max_semantic_similarity: float = 0.95, sentiment_method = 'danlp') -> pd.DataFrame:
+def paraphrase_clean_func(df: pd.DataFrame, 
+                          org_col_name: str, 
+                          para_col_name: str, 
+                          min_length: int = 0, 
+                          max_length: int = 500, 
+                          min_semantic_similarity: 
+                          float = 0.5, 
+                          max_semantic_similarity: float = 0.95) -> pd.DataFrame:
     """
     This function takes a dataframe with columns containing original text and 
     paraphrased text and returns a dataframe with a new column containing the 
@@ -123,73 +136,61 @@ def paraphrase_clean_func(df: pd.DataFrame, org_col_name: str, para_col_name: st
     """
 
     df[para_col_name] = df[para_col_name].apply(lambda x: re.sub("(?s)<.im_end.>.*", "", x)) # specific for using Mistral
-    
-    # calculate length of paraphrase
-    df['old_length'] = df[org_col_name].apply(lambda x: len(x))
 
     # calculate length of paraphrase
     df['new_length'] = df[para_col_name].apply(lambda x: len(x))
 
     # remove rows above a certain length AND outside the range of semantic similarity
-    df = df[(df['new_length'] > min_length) & (df['new_length'] < max_length) & (df['semantic_similarity'] > min_semantic_similarity) & (df['semantic_similarity'] < max_semantic_similarity)]
+    df = df[(df['new_length'] > min_length) & (df['new_length'] < max_length) & (df['semantic_similarity'] > min_semantic_similarity) & (df['semantic_similarity'] < max_semantic_similarity)].copy()
 
     # remove rows with a large change in sentiment
-    if sentiment_method == 'danlp':
-        from danlp.models import load_bert_tone_model
+    classifier = load_bert_tone_model()
 
-        classifier = load_bert_tone_model()
+    # add columns with probabilities
+    df['probabilities_text'] = df[org_col_name].apply(lambda x: classifier.predict_proba(x, analytic=False)[0])
+    df['probabilities_para'] = df[para_col_name].apply(lambda x: classifier.predict_proba(x, analytic=False)[0])
 
-        # add columns with probabilities
-        df['probabilities_text'] = df['text'].apply(lambda x: classifier.predict_proba(x, analytic=False)[0])
-        df[['prob_pos_org', 'prob_neu_org', 'prob_neg_org']] = pd.DataFrame(df.probabilities_text.tolist(), index= df.index)
-        df['probabilities_para'] = df['text_paraphrase_clean'].apply(lambda x: classifier.predict_proba(x, analytic=False)[0])
-        df[['prob_pos_new', 'prob_neu_new', 'prob_neg_new']] = pd.DataFrame(df.probabilities_para.tolist(), index= df.index)
-    
-        # difference betweeen highest propability in org and the corresponding probability in new
-        df['probabilities_para_argmax'] = df['probabilities_text'].apply(lambda x: x.argmax())
-        df['selected_probability'] = df.apply(lambda row: row['probabilities_para'][int(row['probabilities_para_argmax'])], axis=1)
-        df['diff_org_new'] = df['probabilities_text'].apply(lambda x: max(x)) - df['selected_probability']
+    # difference betweeen highest propability in org and the corresponding probability in new
+    df['probabilities_para_argmax'] = df['probabilities_text'].apply(lambda x: x.argmax())
+    df['selected_probability'] = df.apply(lambda row: row['probabilities_para'][int(row['probabilities_para_argmax'])], axis=1)
+    df['diff_org_new'] = df['probabilities_text'].apply(lambda x: max(x)) - df['selected_probability']
 
-        df = df[(df['diff_org_new'] > -0.3) & (df['diff_org_new'] < 0.3)].copy()
-    
+    df = df[(df['diff_org_new'] > -0.3) & (df['diff_org_new'] < 0.3)].copy()
+
     # remove columns that were added for calculating length and similarity
-    df.drop(columns=['old_length', 'new_length', 'probabilities_text', 'prob_pos_org', 'prob_neu_org', 'prob_neg_org', 'probabilities_para', 'prob_pos_new', 'prob_neu_new', 'prob_neg_new', 'probabilities_para_argmax', 'selected_probability', 'diff_org_new', 'text_paraphrase', 'semantic_similarity', 'text'], inplace=True)
+    df.drop(columns=['new_length', 'probabilities_text', 'probabilities_para', 'probabilities_para_argmax', 'selected_probability', 'diff_org_new', 'semantic_similarity', org_col_name], inplace=True)
     df.reset_index(drop=True, inplace=True)
 
     return df
 
 
-
 ##########################################################
-#            DATAFRAME FOR FINAL PRINTOUT         #
+#            DATAFRAME FOR FINAL PRINTOUT                #
 ##########################################################
-
-def generate_dataframe(df, original_column_name: str, paraphrases: list):
-    # original_column_name: the name of the column in df containing the original text
-    # paraphrases: the paraphrased texts
+def generate_final_dataframe(original_df: pd.DataFrame, new_df: pd.DataFrame, original_col_name: str) -> pd.DataFrame:
+    """
+    Combines an original dataframe with a new dataframe resulting from the paraphrase_clean_func,
+    adds a label indicating whether the text is original or new,
+    and returns the combined dataframe.
     
-    # Create a DataFrame for original texts and another for paraphrased texts
-    original_df = df.copy()
-    paraphrase_df = df.copy()
+    Parameters:
+        original_df (pd.DataFrame): Dataframe with the original texts.
+        new_df (pd.DataFrame): Dataframe with the paraphrased texts.
+        original_col_name (str): The name of the column in the original dataframe that contains the text to paraphrase.
+        
+    Returns:
+        pd.DataFrame: The combined dataframe with labels.
+    """
     
-    # Add the paraphrased texts to the paraphrase DataFrame
-    paraphrase_df[original_column_name] = paraphrases
+    # Step 1 & 2: Modify original dataframe
+    modified_original_df = original_df.copy()
+    modified_original_df['label'] = 1
+    modified_original_df.rename(columns={original_col_name: 'New'}, inplace=True)
     
-    # Add a column to indicate if the sentence is original (1) or paraphrased (0)
-    original_df['is_original'] = 1
-    paraphrase_df['is_original'] = 0
-    
-    # Combine the original and paraphrase DataFrames
-    combined_df = pd.concat([original_df, paraphrase_df], ignore_index=True)
-    
-    # Keep all the original columns except the text column, which is now merged with paraphrases
-    combined_columns = [col for col in df.columns if col != original_column_name] + ['is_original', original_column_name]
-    combined_df = combined_df[combined_columns]
-    
-    # Rename the original text column if needed
-    combined_df.rename(columns={original_column_name: 'Text'}, inplace=True)
-    
-    # Save the combined DataFrame as CSV
-    combined_df.to_csv(Path.cwd() / 'data' / 'combined_original_paraphrased.csv', index=False)
-    
+    # Step 3: Combine the dataframes with new labels
+    # Assigning label=0 for new_df here to avoid modifying the original data
+    combined_df = pd.concat([new_df.assign(label=0), modified_original_df], ignore_index=True)
+    print("printing combined_df")
+    print(combined_df)
     return combined_df
+        

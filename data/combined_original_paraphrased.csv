@@ -2,7 +2,7 @@ col2,col3,is_original,Text
 1,1.1,1,Jeg en går mig bygge vil
 2,2.2,1,Jeg gik mig over sø og land
 3,3.3,1,der mødte jeg en gammel mand
-1,1.1,0," selv en skole her og derefter åbne dørerne for andre, men hvem vil takke for en ærgrelse.
+1,1.1,0,"Å bygge et hus kan være en kostbar og tidskrævende proces, men det er også en anledning til at udfordre dig selv og udvikle dine færdigheder. Hvis du ønsker at gennemføre et byggeri projekt, skal du vurdere om du har nok tid, penge og ressourcer til opgaven. Det kan også være en god ide at læse bøger eller tage kursus for at få faglig viden indenfor bygningsindustrien. Hvis du er klar til at starte, skal du også tage stilling til om du vil bygge det hus selv eller ansætte en byggefirma."
+2,2.2,0, Jeg rejste mig gennem bjerge og dal<|im_end|>
+3,3.3,0," Jag mødte en ældre herre.
     <|im_end|>"
-2,2.2,0, Jag krydsede hav og bjerg<|im_end|>
-3,3.3,0, Jeg mødte en ældre herre. <|im_end|>
