@@ -4,11 +4,10 @@ import pandas as pd
 from tqdm import tqdm # loading bar
 import regex as re # regex
 from danlp.models import load_bert_tone_model
-import torch
+
 
 from ctransformers import AutoModelForCausalLM # using mistral model
 from pathlib import Path # path stuff
-import os
 
 # For arguments
 from argparse import ArgumentParser
