@@ -113,13 +113,17 @@ def main(args):
     print(f'{bcolors.OKGREEN}Bad paraphrases filtered out{bcolors.ENDC}')
     print("")
     print("--------------------------------------------------")
+    print("")
+    filename = input(f'{bcolors.OKCYAN}Insert the name of the csv file you want to save the paraphrases in (without the .csv extension): {bcolors.ENDC}')
+    print("")
     print(f'{bcolors.BOLD}Generating final dataframe...{bcolors.ENDC}')
     
     ##########################################
     # generate dataframe with original and paraphrased text and save it as a csv in the data folder
-    generate_final_dataframe(train_data, df_int, column_name)
+    generate_final_dataframe(filename, train_data, df_int, column_name)
     ##########################################
     print("")
+    
     print(f'{bcolors.OKGREEN}Final dataframe generated and saved in "data" folder{bcolors.ENDC}')
     print("")
     print("--------------------------------------------------")

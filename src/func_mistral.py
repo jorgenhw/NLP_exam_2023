@@ -189,7 +189,7 @@ def paraphrase_clean_func(df: pd.DataFrame,
 ##########################################################
 #            DATAFRAME FOR FINAL PRINTOUT                #
 ##########################################################
-def generate_final_dataframe(original_df: pd.DataFrame, new_df: pd.DataFrame, original_col_name: str) -> pd.DataFrame:
+def generate_final_dataframe(filename, original_df: pd.DataFrame, new_df: pd.DataFrame, original_col_name: str) -> pd.DataFrame:
     """
     Combines an original dataframe with a new dataframe resulting from the paraphrase_clean_func,
     adds a label indicating whether the text is original or new,
@@ -214,6 +214,6 @@ def generate_final_dataframe(original_df: pd.DataFrame, new_df: pd.DataFrame, or
     combined_df = pd.concat([new_df.assign(org_or_new=0), modified_original_df], ignore_index=True)
 
     # save combined_df as csv in data folder
-    combined_df.to_csv(Path.cwd() / 'data' / 'combined_df_15dec.csv', index=False)
+    combined_df.to_csv(Path.cwd() / 'data' / f'{filename}.csv', index=False)
 
     return combined_df
