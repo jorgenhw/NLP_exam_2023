@@ -1,8 +1,9 @@
 import pandas as pd
 # playing with mistral
-from src.func_mistral import load_llm, semantic_similarity, generate_paraphrases, load_data, generate_internal_dataframe, paraphrase_clean_func, generate_final_dataframe
+from src.func_mistral import load_llm, semantic_similarity, generate_paraphrases, load_data, generate_internal_dataframe, paraphrase_clean_func, generate_final_dataframe, list_files
 from pathlib import Path
 from src.classes import bcolors
+import os
 
 # For arguments
 import argparse
@@ -21,10 +22,6 @@ def main(args):
     print("")
     print("mkdir Mistral-7B-Instruct-v0.2-DARE-GPTQ")
     print("huggingface-cli download TheBloke/Mistral-7B-Instruct-v0.2-DARE-GPTQ --local-dir Mistral-7B-Instruct-v0.2-DARE-GPTQ --local-dir-use-symlinks False")
-
-
-
-
     print("")
     input(f"{bcolors.OKCYAN}If you have done the above, press Enter to continue...{bcolors.ENDC}")
     print("--------------------------------------------------")
@@ -33,9 +30,26 @@ def main(args):
     input(f"{bcolors.OKCYAN}If you have done the so, press Enter to continue...{bcolors.ENDC}")
     print("--------------------------------------------------")
     print("")
-    print(f"{bcolors.BOLD}Insert the name of the csv file you want to paraphrase (without the .csv extension): {bcolors.ENDC}")
+    print(f"{bcolors.BOLD}Insert the name of the csv file you want to paraphrase (type 'list' to see all files in the data folder): {bcolors.ENDC}")
     print("")
-    filename = input()
+
+    ##########################################
+    while True:
+        filename = input("Enter filename (or 'list'): ")
+        filename = filename.replace('.csv', '')  # Remove .csv from filename if present
+        file_path = Path.cwd() / 'data' / f'{filename}.csv'
+        
+        if filename.lower() == 'list':
+            print("Files in data folder:")
+            for file in list_files(Path.cwd() / 'data'):
+                print(file)
+        elif os.path.isfile(file_path):
+            train_data = load_data(file_path)
+            break
+        else:
+            print(f"The file '{filename}' does not appear in the data folder - type 'list' to view all files in the data folder.")
+    ##########################################
+    
     print("")
     print("--------------------------------------------------")
     # load CSV
@@ -65,11 +79,20 @@ def main(args):
     print("")
     print("--------------------------------------------------")
     print("")
-    print(f"{bcolors.BOLD}Insert the name of the column containing the strings to paraphrase (N.B: case sensitive): {bcolors.ENDC}")
+    print(f"{bcolors.BOLD}Insert the name of the column containing the strings to paraphrase (type 'list' to see all column names): {bcolors.ENDC}")
     print("")
 
     ##########################################
-    column_name = input() 
+    #column_name = input() 
+    while True:
+        column_name = input("Enter the column name (or 'list'): ").lower()  # Convert user input to lower case
+        if column_name == 'list':
+            print("Columns in DataFrame:")
+            print(train_data.columns.tolist())
+        elif column_name in train_data.columns.str.lower():  # Convert DataFrame column names to lower case
+            break
+        else:
+            print("The column name does not match any of the column names in the dataset. Please try again.")
     ##########################################
     
     print("")

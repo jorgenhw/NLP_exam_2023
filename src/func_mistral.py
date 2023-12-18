@@ -4,10 +4,12 @@ import pandas as pd
 from tqdm import tqdm # loading bar
 import regex as re # regex
 from danlp.models import load_bert_tone_model
+import os
 
 
 from ctransformers import AutoModelForCausalLM # using mistral model
 from pathlib import Path # path stuff
+
 
 
 # load data
@@ -18,6 +20,8 @@ def load_data(path: str) -> pd.DataFrame:
     df = pd.read_csv(path)
     return df
 
+def list_files(directory):
+    return os.listdir(directory)
 
 # Loading LLM model
 def load_llm(temperature: float = 0.8, 
