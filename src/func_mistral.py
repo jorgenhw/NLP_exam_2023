@@ -210,8 +210,8 @@ def generate_final_dataframe(filename, original_df: pd.DataFrame, new_df: pd.Dat
     
     # Step 1 & 2: Modify original dataframe
     modified_original_df = original_df.copy()
-    modified_original_df['org_or_new'] = 1
-    modified_original_df.rename(columns={original_col_name: 'New'}, inplace=True)
+    modified_original_df['org1_or_new0'] = 1
+    modified_original_df.rename(columns={original_col_name: 'text'}, inplace=True)
     
     # Step 3: Combine the dataframes with new labels
     # Assigning label=0 for new_df here to avoid modifying the original data
