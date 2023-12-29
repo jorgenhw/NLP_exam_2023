@@ -6,6 +6,7 @@ import openai
 from dotenv import load_dotenv
 import os
 from tqdm import tqdm
+import pandas as pd
 
 # Set the OpenAI API key
 def set_api_key():
@@ -37,3 +38,31 @@ def paraphrase_text_list(text_list: list) -> list:
         paraphrased_text = response['choices'][0]['message']['content']
         paraphrased_list.append(paraphrased_text)
     return paraphrased_list
+
+def df_with_original_and_paraphrased_text(text_list: list, paraphrased_list: list) -> list:
+    """
+    Takes a list of strings and a list of paraphrased strings and outputs a dataframe with the original and paraphrased text.
+    
+    text_list: list of strings to paraphrase
+    paraphrased_list: list of paraphrased strings
+    """
+    df = pd.DataFrame(list(zip(text_list, paraphrased_list)), columns =['original_text', 'paraphrased_text'])
+    return df
+
+def semantic_similarity(df: pd.DataFrame) -> list:
+    """
+    Takes a dataframe with original and paraphrased text and outputs a list of semantic similarity scores.
+    
+    df: dataframe with original and paraphrased text
+    """
+    similarity = []
+    print("Calculating semantic similarity...")
+    for i in tqdm(range(len(df))):
+        response = openai.Engine("davinci").search(
+            documents=[df['original_text'][i]],
+            query=df['paraphrased_text'][i],
+            max_rerank=10,
+            return_metadata=True,
+        )
+        similarity.append(response['data'][0]['score'])
+    return similarity
