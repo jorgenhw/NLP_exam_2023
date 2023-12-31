@@ -31,7 +31,15 @@ def paraphrase_text_list(text_list: list) -> list:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "Paraphrase the following sentence (in Danish): "},
+                {"role": "system", "content": """Your task is to proficiently understand and communicate in Danish. You are required to rephrase text in Danish while adhering to the following rules:
+
+1. Avoid repeating yourself.
+2. Refrain from using the same sentence as in the original text.
+3. Maintain a similar text length to the original.
+4. Ensure the context remains consistent with the original text.
+5. Be creative in your rephrasing.
+
+Please provide your rephrased response in Danish, observing the given rules and maintaining the context of the original text."""},
                 {"role": "user", "content": text},
             ]
         )

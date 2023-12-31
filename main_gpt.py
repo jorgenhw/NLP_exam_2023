@@ -18,7 +18,7 @@ paraphrase = func.paraphrase_text_list(text_to_paraphrase)
 df["paraphrased_text"] = paraphrase
 
 # save the df
-df.to_csv("data/train_paraphrased_with_gpt4_HF_df.csv")
+df.to_csv("data/train_paraphrased_with_gpt4_HF_df_new_prompt.csv")
 
 # Test the df_with_original_and_paraphrased_text function
 #df = func.df_with_original_and_paraphrased_text(text_to_paraphrase, paraphrase)
