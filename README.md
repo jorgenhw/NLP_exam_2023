@@ -1,10 +1,17 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
+  <a href="https://i.imgur.com/20I4D5w.png">
+    <img src="https://i.imgur.com/20I4D5w.png" alt="Logo" width=200 height=200>
+  </a>
   
-  <h1 align="center">Paraphrase Your Data</h1> 
-  <h3 align="center">Instructions</h3> 
+  <h1 align="center">BOOSTING LOW RESOURCE LANGUAGES</h1> 
+  <h2 align="center"><i>Generating paraphrase for model optimization</i></h2> 
+  <h3 align="center">Cognitive Science // Natural Language Processing 2024</h3>
 
+
+  <p align="center">
+    Jørgen Højlund Wibe & Niels Aalund Krogsgaard
   </p>
 </p>
 
