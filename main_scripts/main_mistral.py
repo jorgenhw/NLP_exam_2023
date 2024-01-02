@@ -147,7 +147,7 @@ def main(args):
     ##########################################
     print("")
     
-    print(f'{bcolors.OKGREEN}Final dataframe generated and saved in "data" folder{bcolors.ENDC}')
+    print(f'{bcolors.OKGREEN}Final dataframe generated and saved in "data" folder under the name {filename}{bcolors.ENDC}')
     print("")
     print("--------------------------------------------------")
 
