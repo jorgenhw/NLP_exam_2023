@@ -15,6 +15,14 @@ This project utilizes the newest state-of-the-art multililngual LLM to enhance a
 
 This is especially useful for low resource languages where large human annotated datasets are sparse and requires a significant amount of resources to create. With this approach we can double, triple or 10x the length of the annotated datasets while staying true to the original labels and thus allow for better finetuning of new models. 
 
+The repository is part of the exam in Natural Language Processing at Aarhus University. The associated exam paper is in the folder 'exam_paper'.
+
+<!-- ABOUT THE PROJECT -->
+#### A note on reproducibility
+This repository is set up to seamlessly run paraphrasing with Mistral 7B using the `setup.sh` bash script, tested on both Mac, Linux and Windows (just follow the steps 1-4). 
+
+However, in relation to the exam paper, the steps necesarry to recreate the fine-tuning process are in notebook format and requires one to run the chunks one by one, potentially changing the file paths. Also, if one wishes to do paraphrases using GPT-3 or GPT-4, it is necesarry to add a `.env` file to the main folder with a OpenAI API key inside in the format `OPENAI_API_KEY = "your code"` including the "" signs. After this, one can simply run the `setup_gpt4.sh` bash script from the terminal writing `bash setup_gpt4.sh`.
+
 <!-- USAGE -->
 ## Usage ✅
 To use or reproduce the results you need to adopt the following steps.
@@ -100,3 +108,37 @@ To specify an argument write
 ```
 python3 main.py --temperature 0.6
 ```
+
+## Folder structure of repo
+
+```
+.
+├── .gitignore
+├── README.md
+├── classification_reports_europarl
+│   ├── 10DDSC_europarl_HF1x_gpt4paraphrased_plus_org.csv
+│   ├── 10DDSC_europarl_only_HF.csv
+│   ├── ...
+├── classification_reports_twitter
+│   ├── 10classification_report_gpt4_plus_org_paraphrasings.csv
+│   ├── 10classification_report_only_gpt4_paraphrasings.csv
+│   ├── ...
+├── data
+│   ├── paraphrasings_on_train_2148rows_seed42_1.csv
+│   ├── paraphrasings_on_train_2148rows_seed42_2.csv
+│   ├── ...
+├── main_gpt.py
+├── main_mistral.py
+├── model
+│   └── empty
+├── nbs
+│   └── finetune.ipynb
+├── requirements.txt
+├── setup.sh
+└── setup_gpt4.sh
+├── src
+│   ├── classes.py
+│   ├── func_gpt.py
+│   └── func_mistral.py
+```
+
