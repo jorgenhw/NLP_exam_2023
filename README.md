@@ -78,9 +78,11 @@ bash setup.sh
 
 The following arguments can be changed using ```arparse```. Below is a table descriping the different arguments.
 
+*Make sure you are in the virtual environment before doing so (`venv_NLP_exam`).*
+
 To print the different arguments in the terminal, write:
 ```
-python3 main.py --help
+python3 main_mistral.py --help
 ```
 
 | Argument                | Data Type | Default Value                                                         | Description                                                                                         |
