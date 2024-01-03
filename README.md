@@ -78,7 +78,10 @@ bash setup.sh
 
 The following arguments can be changed using ```arparse```. Below is a table descriping the different arguments.
 
-*Make sure you are in the virtual environment before doing so (`venv_NLP_exam`).*
+*Make sure you are in the virtual environment before doing so (`venv_NLP_exam`). To activate the virtual environment, make sure to have run setup.sh first. After this, you can manually activate the environment by inserting this into the terminal:*
+```
+source venv_NLP_exam/bin/activate
+```
 
 To print the different arguments in the terminal, write:
 ```
@@ -97,7 +100,7 @@ python3 main_mistral.py --help
 To specify an argument write
 
 ```
-python3 main.py --temperature 0.6
+python3 main_mistral.py --temperature 0.6
 ```
 
 ## Folder structure of repo
