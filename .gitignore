@@ -6,3 +6,5 @@ logs
 test_trainer
 model/openhermes-2.5-mistral-7b.Q4_K_M.gguf
 model/Mistral-7B-Instruct-v0.2-DARE-GPTQ
+.vscode
+src/__pycache__

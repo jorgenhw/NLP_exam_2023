@@ -26,7 +26,7 @@ The repository is part of the exam in Natural Language Processing at Aarhus Univ
 
 <!-- ABOUT THE PROJECT -->
 #### A note on reproducibility
-This repository is set up to seamlessly run paraphrasing with Mistral 7B using the `setup.sh` bash script, tested on both Mac, Linux and Windows (just follow the steps 1-4). 
+This repository is set up to seamlessly run paraphrasing with Mistral 7B using the `setup.sh` bash script, tested on both Mac, Linux and Windows (just follow the steps 1-3). 
 
 However, in relation to the exam paper, the steps necesarry to recreate the fine-tuning process are in notebook format and requires one to run the chunks one by one, potentially changing the file paths. Also, if one wishes to do paraphrases using GPT-3 or GPT-4, it is necesarry to add a `.env` file to the main folder with a OpenAI API key inside in the format `OPENAI_API_KEY = "your code"` including the "" signs. After this, one can simply run the `setup_gpt4.sh` bash script from the terminal writing `bash setup_gpt4.sh`.
 
@@ -37,10 +37,9 @@ To use or reproduce the results you need to adopt the following steps.
 **NOTE:** There may be slight variations depending on the terminal and operating system you use. The following example is designed to work using the Visual Studio Code version 1.76.0 (Universal) on a machine running MacOS Ventura 13.4 on a M1 Max chip. The terminal code should therefore work using a unix-based bash. The avoid potential package conflicts, the ```setup.sh``` bash files contains the steps necesarry to create a virtual environment for the project.
 
 1. Clone repository
-2. Download Mistral LLM
-3. Add your data to the ```data``` folder
-4. Run setup.sh
-5. [Optional] Change arguments
+2. Add your data to the ```data``` folder
+3. Run setup.sh
+4. [Optional] Change arguments
 
 > **Step 1** Clone repository
 
@@ -51,40 +50,23 @@ git clone https://github.com/jorgenhw/NLP_exam_2023.git
 cd NLP_exam_2023
 ```
 
-> **Step 2** Download Mistral locally
-
-This is done by running the following two line in your terminal, one by one
-
-NB: Make sure you're in the root directory (NLP_exam_2023) and that you are inside the virtual environment.
-
-```
-huggingface-cli download TheBloke/OpenHermes-2.5-Mistral-7B-GGUF openhermes-2.5-mistral-7b.Q4_K_M.gguf --local-dir model --local-dir-use-symlinks False
-```
-
-This downloads and saves Mistral7B in the 'model' folder.
-
-NOTE: If you're on a machine with GPU (e.g. M1 Macbooks), install the GPU version of Mistral (.GPTQ) instead with the following line:
-
-```
-huggingface-cli download TheBloke/Mistral-7B-Instruct-v0.2-DARE-GPTQ --local-dir model --local-dir-use-symlinks False
-```
-
-> **Step 3** Add your data to the ```data``` folder
+> **Step 2** Add your data to the ```data``` folder
 
 *Correct format of data:*
 This script only takes the file format ```.csv```.
 
 Place the data in the ```data``` folder.
 
-> **Step 4** Run ```setup.sh```
+> **Step 3** Run ```setup.sh```
 
 To run the program, we have included a bash script that automatically
 
 1. Creates a virtual environment for the project
 2. Activates the virtual environment
 3. Installs the correct versions of the packages required
-4. Runs the script
-5. Deactivates the virtual environment
+4. Downloads Mistral 7B to the `model` folder.
+5. Runs the script
+6. Deactivates the virtual environment
 
 Run the code below in your bash terminal:
 
@@ -92,7 +74,7 @@ Run the code below in your bash terminal:
 bash setup.sh
 ```
 
-> **Step 5** [Optional]: Change parameters
+> **Step 4** [Optional]: Change parameters
 
 The following arguments can be changed using ```arparse```. Below is a table descriping the different arguments.
 

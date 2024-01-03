@@ -13,13 +13,7 @@ def main(args):
     print(f'{bcolors.HEADER}Running main_mistral.py{bcolors.ENDC}')
     print("")
     print("--------------------------------------------------")
-
-    print(f"{bcolors.BOLD}Before continuing, make sure you have run the following in the terminal (if not, end this and do so, making sure you're in the right working directory and in the virtual environment (see README step 2)): {bcolors.ENDC}")
     print("")
-    print("huggingface-cli download TheBloke/OpenHermes-2.5-Mistral-7B-GGUF openhermes-2.5-mistral-7b.Q4_K_M.gguf --local-dir model --local-dir-use-symlinks False")
-    print("")
-    input(f"{bcolors.OKCYAN}If you have done the above, press Enter to continue...{bcolors.ENDC}")
-    print("--------------------------------------------------")
     print(f"{bcolors.BOLD}Put your correctly formatted .csv (0th column containing the strings to paraphrase) data file in the 'data' folder.{bcolors.ENDC}")
     print("")
     input(f"{bcolors.OKCYAN}If you have done the so, press Enter to continue...{bcolors.ENDC}")
