@@ -9,10 +9,6 @@
   <h2 align="center"><i>Generating paraphrase for model optimization</i></h2> 
   <h3 align="center">Cognitive Science // Natural Language Processing 2024</h3>
 
-
-  <p align="center">
-    Jørgen Højlund Wibe & Niels Aalund Krogsgaard
-  </p>
 </p>
 
 
